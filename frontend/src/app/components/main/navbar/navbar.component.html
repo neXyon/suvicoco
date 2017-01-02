@@ -1,0 +1,15 @@
+<nav>
+  <div class="container">
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo">SuViCoCo</a>
+      <ul id="nav-mobile" class="right hide-on-med-and-down">
+        <li><a routerLink="/">Home</a></li>
+        <li><a routerLink="">Programme</a></li>
+        <li><a routerLink="">Rezepte</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div *ngIf="loadingActive">
+  <loading-linear></loading-linear>
+</div>
