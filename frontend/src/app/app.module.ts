@@ -5,10 +5,14 @@ import { HttpModule } from '@angular/http';
 
 import { MaterializeModule } from 'angular2-materialize';
 import { AppComponent } from './app.component';
+import { LoadingCircularComponent } from './components/misc/loading/circular/circular.component';
+import { LoadingLinearComponent } from './components/misc/loading/linear/linear.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoadingCircularComponent,
+    LoadingLinearComponent
   ],
   imports: [
     BrowserModule,
