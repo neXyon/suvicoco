@@ -7,9 +7,19 @@
         <li><a routerLink="">Programme</a></li>
         <li><a routerLink="">Rezepte</a></li>
       </ul>
+      <ul class="right hide-on-large-only">
+        <li><a materialize="dropdown" class="dropdown-button" data-beloworigin="true" data-activates="dropdown-menu"><i class="material-icons">more_vert</i></a></li>
+      </ul>
     </div>
   </div>
 </nav>
+
+<ul id="dropdown-menu" class="dropdown-content">
+  <li><a routerLink="/">Home</a></li>
+  <li><a routerLink="">Programme</a></li>
+  <li><a routerLink="">Rezepte</a></li>
+</ul>
+
 <div *ngIf="loadingActive">
   <loading-linear></loading-linear>
 </div>

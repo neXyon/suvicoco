@@ -6,9 +6,20 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
+  currentlyCooking : boolean = false;
+
   constructor() { }
 
   ngOnInit() {
+  }
+
+
+  startCooking(){
+    this.currentlyCooking = true;
+  }
+
+  stopCooking(){
+    this.currentlyCooking = false;
   }
 
 }
