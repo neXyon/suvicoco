@@ -26,6 +26,7 @@ def on_disconnect():
 
 @socketio.on("cooking")
 def on_cooking(data):
+    socketio.emit("cooking", data)
     print(data)
 
 

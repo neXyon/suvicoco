@@ -26,6 +26,11 @@ export class WebsocketService {
     this.websocket.emit(event, data)
   }
 
+  public on(event, func)
+  {
+    this.websocket.on(event, (data) => func(data));
+  }
+
   public disconnect()
   {
     this.websocket.disconnect();

@@ -16,17 +16,20 @@ export class MainComponent implements OnInit {
     this.wss = wss_;
   }
 
-  ngOnInit() {
+  ngOnInit()
+  {
+    this.wss.on('cooking', (data) => this.receivedStatus(data));
   }
 
-  startCooking(){
+  private startCooking(){
     this.wss.send('cooking', true);
-    this.currentlyCooking = true;
   }
 
-  stopCooking(){
+  private stopCooking(){
     this.wss.send('cooking', false);
-    this.currentlyCooking = false;
   }
 
+  private receivedStatus(data){
+    this.currentlyCooking = data;
+  }
 }
