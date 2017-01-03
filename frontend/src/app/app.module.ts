@@ -11,6 +11,8 @@ import { LoadingLinearComponent } from './components/misc/loading/linear/linear.
 import { MainComponent } from './components/main/main/main.component';
 import { NavbarComponent } from './components/main/navbar/navbar.component';
 
+import { WebsocketService } from './services/websocket/websocket.service';
+
 const appRoutes: Routes = [
 
   { path: '**', component: MainComponent }
@@ -32,7 +34,7 @@ const appRoutes: Routes = [
     MaterializeModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [],
+  providers: [WebsocketService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
