@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { WebsocketService } from '../../../services/websocket/websocket.service';
 
 @Component({
   selector: 'app-main',
@@ -6,13 +7,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
-  currentlyCooking : boolean = false;
+  private currentlyCooking : boolean = false;
 
-  constructor() { }
+  private wss : WebsocketService;
+
+  constructor(private wss_ : WebsocketService)
+  {
+    this.wss = wss_;
+  }
 
   ngOnInit() {
   }
-
 
   startCooking(){
     this.currentlyCooking = true;

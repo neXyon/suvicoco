@@ -4,5 +4,8 @@
   <button (click)="startCooking()" class="waves-effect waves-light btn" [disabled]="currentlyCooking"><i class="material-icons left">play_circle_outline</i>Start Cooking</button>
   <button (click)="stopCooking()" class="waves-effect waves-light btn" [disabled]="!currentlyCooking"><i class="material-icons left">stop</i>Stop Cooking</button>
 
+  <div *ngIf="wss.isConnected">Websocket CONNECTED</div>
+  <div *ngIf="!wss.isConnected">Websocket DISCONNECTED</div>
+
   00:00
 <p>

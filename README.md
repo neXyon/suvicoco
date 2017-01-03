@@ -1,7 +1,8 @@
 # suvicoco
 
 ## Backend
-- ToDo
+- Prerequisite: Flask + Flask-SocketIO (__pip install flask__ / __pip install flask-socketio__)
+- Start Backend with __python main.py__
 
 ## Frontend
 - Prerequisite: NodeJs + AngularCli (__npm install -g angular-cli__)
