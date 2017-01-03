@@ -20,10 +20,12 @@ export class MainComponent implements OnInit {
   }
 
   startCooking(){
+    this.wss.send('cooking', true);
     this.currentlyCooking = true;
   }
 
   stopCooking(){
+    this.wss.send('cooking', false);
     this.currentlyCooking = false;
   }
 

@@ -1,6 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
 import * as io from 'socket.io-client';
-import { MaterializeAction } from 'angular2-materialize';
 
 @Injectable()
 export class WebsocketService {
@@ -20,6 +19,11 @@ export class WebsocketService {
     this.websocket.on('connect', () => this.onConnect());
     this.websocket.on('disconnect', () => this.onDisconnect());
     this.websocket.on('error', () => this.onError());
+  }
+
+  public send(event, data)
+  {
+    this.websocket.emit(event, data)
   }
 
   public disconnect()

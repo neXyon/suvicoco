@@ -7,19 +7,27 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 socketio = SocketIO(app)
 
+
 @app.route("/")
 def index():
     return "INDEX"
+
 
 @socketio.on("connect")
 def on_connect():
     clients.append(request.sid)
     print("Client connected: " + request.sid)
 
+
 @socketio.on("disconnect")
 def on_disconnect():
     clients.remove(request.sid)
     print("Client disconnected: " + request.sid)
+
+@socketio.on("cooking")
+def on_cooking(data):
+    print(data)
+
 
 if __name__ == "__main__":
     print("\tServing HTTP and WEBSOCKET on http://localhost:5000")
