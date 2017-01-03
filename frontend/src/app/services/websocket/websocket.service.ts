@@ -16,8 +16,8 @@ export class WebsocketService {
   public connect()
   {
     this.websocket = io("http://localhost:5000");
-    this.websocket.on('connect', this.onConnect);
-    this.websocket.on('disconnect', this.onDisconnect);
+    this.websocket.on('connect', () => this.onConnect());
+    this.websocket.on('disconnect', () => this.onDisconnect());
   }
 
   public disconnect()

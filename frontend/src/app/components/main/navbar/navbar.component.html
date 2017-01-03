@@ -2,6 +2,11 @@
   <div class="container">
     <div class="nav-wrapper">
       <a href="#" class="brand-logo">SuViCoCo</a>
+      <ul class="right" >
+        <li><span></span></li>
+        <li *ngIf="wss.isConnected"><span class="new badge green" data-badge-caption="">Connected</span></li>
+        <li *ngIf="!wss.isConnected"><span class="new badge red" data-badge-caption="">Disconnected</span></li>
+      </ul>
       <ul id="nav-mobile" class="right hide-on-med-and-down">
         <li><a routerLink="/">Home</a></li>
         <li><a routerLink="">Programme</a></li>
