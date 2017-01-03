@@ -7,6 +7,7 @@ export class WebsocketService {
 
   private websocket : any;
   public isConnected : boolean = false;
+  public clientId : string;
 
   constructor()
   {
@@ -18,6 +19,7 @@ export class WebsocketService {
     this.websocket = io("http://localhost:5000");
     this.websocket.on('connect', () => this.onConnect());
     this.websocket.on('disconnect', () => this.onDisconnect());
+    this.websocket.on('error', () => this.onError());
   }
 
   public disconnect()
@@ -27,11 +29,17 @@ export class WebsocketService {
 
   private onConnect()
   {
+    this.clientId = this.websocket.io.engine.id;
     this.isConnected = true;
   }
 
   private onDisconnect()
   {
     this.isConnected = false;
+  }
+
+  private onError()
+  {
+
   }
 }

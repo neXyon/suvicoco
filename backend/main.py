@@ -1,6 +1,7 @@
-from flask import Flask
+from flask import Flask, request
 from flask_socketio import SocketIO
 
+clients = []
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
@@ -12,12 +13,14 @@ def index():
 
 @socketio.on("connect")
 def on_connect():
-    print("Client connected")
+    clients.append(request.sid)
+    print("Client connected: " + request.sid)
 
 @socketio.on("disconnect")
 def on_disconnect():
-    print("Client disconnected")
+    clients.remove(request.sid)
+    print("Client disconnected: " + request.sid)
 
 if __name__ == "__main__":
-    print("\tServing HTTP on http://localhost:5000")
+    print("\tServing HTTP and WEBSOCKET on http://localhost:5000")
     socketio.run(app)
