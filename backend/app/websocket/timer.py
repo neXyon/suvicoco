@@ -1,5 +1,6 @@
 import time
 from threading import Thread
+from flask import g
 from .. import socketio
 
 start_time = -1
