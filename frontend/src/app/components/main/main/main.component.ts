@@ -10,7 +10,9 @@ export class MainComponent implements OnInit {
   private wss : WebsocketService;
 
   private currentlyCooking : boolean = false;
-  public elapsedTime : number = 0;
+  private elapsedTime : number = 0;
+
+  private temperature : number;
 
   constructor(private wss_ : WebsocketService)
   {
@@ -25,6 +27,7 @@ export class MainComponent implements OnInit {
 
   private startCooking(){
     this.wss.send('timer_action', 'start');
+    this.wss.send('cooking_action', {cmd: 'start', temp: this.temperature});
   }
 
   private stopCooking(){
