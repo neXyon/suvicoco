@@ -7,9 +7,10 @@ import { WebsocketService } from '../../../services/websocket/websocket.service'
 })
 export class MainComponent implements OnInit {
 
-  private currentlyCooking : boolean = false;
-
   private wss : WebsocketService;
+
+  private currentlyCooking : boolean = false;
+  public elapsedTime : number = 0;
 
   constructor(private wss_ : WebsocketService)
   {
@@ -18,18 +19,26 @@ export class MainComponent implements OnInit {
 
   ngOnInit()
   {
-    this.wss.on('cooking', (data) => this.receivedStatus(data));
+    this.wss.on('timer_status', (data) => this.receivedStatus(data));
+    this.wss.on('timer_elapsed', (data) => this.updateTimer(data));
   }
 
   private startCooking(){
-    this.wss.send('cooking', true);
+    this.wss.send('timer_action', 'start');
   }
 
   private stopCooking(){
-    this.wss.send('cooking', false);
+    this.wss.send('timer_action', 'stop');
   }
 
   private receivedStatus(data){
-    this.currentlyCooking = data;
+    if(data == 'active')
+      this.currentlyCooking = true;
+    else if(data == 'inactive')
+      this.currentlyCooking = false;
+  }
+
+  private updateTimer(data){
+    this.elapsedTime = data;
   }
 }

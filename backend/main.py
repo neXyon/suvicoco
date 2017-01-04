@@ -1,34 +1,8 @@
-from flask import Flask, request
-from flask_socketio import SocketIO
+#!/bin/env python
+from app import create_app, socketio
+import app.websocket
 
-clients = []
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
-
-
-@app.route("/")
-def index():
-    return "INDEX"
-
-
-@socketio.on("connect")
-def on_connect():
-    clients.append(request.sid)
-    print("Client connected: " + request.sid)
-
-
-@socketio.on("disconnect")
-def on_disconnect():
-    clients.remove(request.sid)
-    print("Client disconnected: " + request.sid)
-
-@socketio.on("cooking")
-def on_cooking(data):
-    socketio.emit("cooking", data)
-    print(data)
-
+app = create_app(debug=False)
 
 if __name__ == "__main__":
     print("\tServing HTTP and WEBSOCKET on http://localhost:5000")
