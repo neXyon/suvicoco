@@ -1,18 +1,20 @@
-from flask import request, g
+from flask import request
 from .. import socketio, app
-from ..database.SQLiteAccess import get_db
-import time
-
+from ..database import Connection
 
 @socketio.on("connect")
 def on_connect():
-    get_db().cursor().execute("INSERT INTO Connections VALUES (?,?,?)", (request.sid, int(time.time()), True))
-    get_db().commit()
+    Connection.add_connection(request.sid)
     print("Client connected: " + request.sid)
 
 
 @socketio.on("disconnect")
 def on_disconnect():
-    get_db().cursor().execute("UPDATE Connections SET is_online = ? WHERE id = ?", (False, request.sid))
-    get_db().commit()
+    Connection.close_connection(request.sid)
     print("Client disconnected: " + request.sid)
+
+
+@app.route("/connections/current")
+def current_connections():
+    return str(Connection.get_current_connections())
+
