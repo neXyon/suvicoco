@@ -5,7 +5,10 @@ import { HttpModule } from '@angular/http';
 import { RouterModule, Routes } from '@angular/router';
 
 import { MaterializeModule } from 'angular2-materialize';
+import { ChartsModule } from 'ng2-charts';
+
 import { AppComponent } from './app.component';
+import { ChartComponent } from './chart.component';
 import { LoadingCircularComponent } from './components/misc/loading/circular/circular.component';
 import { LoadingLinearComponent } from './components/misc/loading/linear/linear.component';
 import { MainComponent } from './components/main/main/main.component';
@@ -26,12 +29,14 @@ const appRoutes: Routes = [
     LoadingLinearComponent,
     MainComponent,
     NavbarComponent,
+    ChartComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     MaterializeModule,
+    ChartsModule,
     RouterModule.forRoot(appRoutes)
   ],
   providers: [WebsocketService],
