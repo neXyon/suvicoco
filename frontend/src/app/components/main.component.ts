@@ -7,30 +7,30 @@ import { CookerService } from '../services/cooker.service';
 })
 export class MainComponent implements OnInit {
 
-  private wss : CookerService;
+  private cs : CookerService;
 
   private currentlyCooking : boolean = false;
   private elapsedTime : number = 0;
 
   private temperature : number;
 
-  constructor(private wss_ : CookerService)
+  constructor(private cs_ : CookerService)
   {
-    this.wss = wss_;
+    this.cs = cs_;
   }
 
   ngOnInit()
   {
-
+    this.currentlyCooking = this.cs.get_status();
   }
 
   private startCooking(){
-    this.wss.send('start cooking', {temperature: this.temperature});
+    this.cs.start_cooking(this.temperature);
     this.currentlyCooking = true;
   }
 
   private stopCooking(){
-    this.wss.send('stop cooking', {});
+    this.cs.stop_cooking();
     this.currentlyCooking = false;
   }
 
