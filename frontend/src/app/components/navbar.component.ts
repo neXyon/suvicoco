@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { WebsocketService } from '../../../services/websocket/websocket.service';
+import { CookerService } from '../services/cooker.service';
 
 @Component({
   selector: 'navbar',
@@ -10,9 +10,9 @@ export class NavbarComponent implements OnInit {
 
   loadingActive: boolean = false;
   router : Router;
-  wss : WebsocketService;
+  wss : CookerService;
 
-  constructor(private router_: Router, private wss_ : WebsocketService)
+  constructor(private router_: Router, private wss_ : CookerService)
   {
     this.router = router_;
     this.wss = wss_;

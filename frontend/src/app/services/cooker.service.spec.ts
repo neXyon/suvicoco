@@ -1,16 +1,16 @@
 /* tslint:disable:no-unused-variable */
 
 import { TestBed, async, inject } from '@angular/core/testing';
-import { WebsocketService } from './websocket.service';
+import { CookerService } from './cooker.service';
 
-describe('WebsocketService', () => {
+describe('CookerService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [WebsocketService]
+      providers: [CookerService]
     });
   });
 
-  it('should ...', inject([WebsocketService], (service: WebsocketService) => {
+  it('should ...', inject([CookerService], (service: CookerService) => {
     expect(service).toBeTruthy();
   }));
 });

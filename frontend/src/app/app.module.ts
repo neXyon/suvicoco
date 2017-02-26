@@ -7,14 +7,13 @@ import { RouterModule, Routes } from '@angular/router';
 import { MaterializeModule } from 'angular2-materialize';
 import { ChartsModule } from 'ng2-charts';
 
-import { AppComponent } from './app.component';
-import { ChartComponent } from './chart.component';
-import { LoadingCircularComponent } from './components/misc/loading/circular/circular.component';
-import { LoadingLinearComponent } from './components/misc/loading/linear/linear.component';
-import { MainComponent } from './components/main/main/main.component';
-import { NavbarComponent } from './components/main/navbar/navbar.component';
+import { AppComponent } from './components/app.component';
+import { ChartComponent } from './components/chart.component';
+import { LoadingLinearComponent } from './components/linear.component';
+import { MainComponent } from './components/main.component';
+import { NavbarComponent } from './components/navbar.component';
 
-import { WebsocketService } from './services/websocket/websocket.service';
+import { CookerService } from './services/cooker.service';
 
 const appRoutes: Routes = [
 
@@ -25,7 +24,6 @@ const appRoutes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
-    LoadingCircularComponent,
     LoadingLinearComponent,
     MainComponent,
     NavbarComponent,
@@ -39,7 +37,7 @@ const appRoutes: Routes = [
     ChartsModule,
     RouterModule.forRoot(appRoutes)
   ],
-  providers: [WebsocketService],
+  providers: [CookerService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

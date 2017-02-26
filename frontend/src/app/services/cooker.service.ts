@@ -2,7 +2,7 @@ import { Injectable, EventEmitter } from '@angular/core';
 import * as io from 'socket.io-client';
 
 @Injectable()
-export class WebsocketService {
+export class CookerService {
 
   private websocket : any;
   public isConnected : boolean = false;

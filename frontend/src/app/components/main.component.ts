@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { WebsocketService } from '../../../services/websocket/websocket.service';
+import { CookerService } from '../services/cooker.service';
 
 @Component({
   selector: 'app-main',
@@ -7,14 +7,14 @@ import { WebsocketService } from '../../../services/websocket/websocket.service'
 })
 export class MainComponent implements OnInit {
 
-  private wss : WebsocketService;
+  private wss : CookerService;
 
   private currentlyCooking : boolean = false;
   private elapsedTime : number = 0;
 
   private temperature : number;
 
-  constructor(private wss_ : WebsocketService)
+  constructor(private wss_ : CookerService)
   {
     this.wss = wss_;
   }
@@ -25,10 +25,13 @@ export class MainComponent implements OnInit {
   }
 
   private startCooking(){
-    this.wss.send('cooking_action', {cmd: 'start', temp: this.temperature});
+    this.wss.send('start cooking', {temperature: this.temperature});
+    this.currentlyCooking = true;
   }
 
   private stopCooking(){
+    this.wss.send('stop cooking', {});
+    this.currentlyCooking = false;
   }
 
   private updateTimer(data){
