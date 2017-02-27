@@ -1,5 +1,8 @@
-import { Injectable, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { Headers, Http } from '@angular/http';
+
 import * as io from 'socket.io-client';
+import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class CookerService {
@@ -12,7 +15,14 @@ export class CookerService {
   public data : any = [];
   public temperature : number = 0.0;
 
-  constructor()
+  private baseUrl = '/control/';
+  private startUrl = this.baseUrl + 'start/';
+  private stopUrl = this.baseUrl + 'stop';
+  private statusUrl = this.baseUrl + 'status';
+  private setUrl = this.baseUrl + 'set/';
+  private dataUrl = this.baseUrl + 'data';
+
+  constructor(private http: Http)
   {
     this.connect();
   }
@@ -25,52 +35,47 @@ export class CookerService {
     this.websocket.on('error', () => this.onError());
   }
 
-  public start_cooking(temperature)
+  public start_cooking(temperature) : Promise<boolean>
   {
-    this.websocket.emit('start cooking', {temperature: temperature});
+    return this.http.get(`${this.startUrl}/${temperature}`)
+               .toPromise()
+               .then(response => response.json() as boolean)
+               .then(status => {if(status) this.status = true; console.log(status); return status})
+               .catch((error: any) => console.log('Error', error));
   }
 
-  public stop_cooking()
+  public stop_cooking() : Promise<boolean>
   {
-    this.websocket.emit('stop cooking');
+    return this.http.get(this.stopUrl)
+               .toPromise()
+               .then(response => response.json() as boolean)
+               .then(status => {if(status) this.status = false; return status})
+               .catch((error: any) => console.log('Error', error));
   }
 
-  public get_status() : boolean
+  public get_status() : Promise<boolean>
   {
-    return this.status;
+    return this.http.get(this.statusUrl)
+               .toPromise()
+               .then(response => response.json() as boolean)
+               .then(status => this.status = status)
+               .catch((error: any) => console.log('Error', error));
   }
 
-  private set_status(status: boolean)
+  public get_data() : Promise<any>
   {
-    console.log(status);
-    this.status = status;
+    return this.http.get(this.dataUrl)
+               .toPromise()
+               .then(response => response.json())
+               .catch((error: any) => console.log('Error', error));
   }
 
-  public get_data()
+  private set_temperature(temperature : number) : Promise<boolean>
   {
-    return this.data;
-  }
-
-  private set_data(data)
-  {
-    console.log(data);
-    this.data = data;
-  }
-
-  public get_temperature() : number
-  {
-    return this.temperature;
-  }
-
-  private set_temperature(temperature : number)
-  {
-    console.log(temperature);
-    this.temperature = temperature;
-  }
-
-  public send(event, data)
-  {
-    this.websocket.emit(event, data)
+    return this.http.get(`${this.setUrl}/${temperature}`)
+               .toPromise()
+               .then(response => response.json() as boolean)
+               .catch((error: any) => console.log('Error', error));
   }
 
   private update(data)
@@ -82,9 +87,9 @@ export class CookerService {
     this.data[what] += [when, value];*/
   }
 
-  public on(event, func)
+  public onUpdate(func)
   {
-    this.websocket.on(event, (data) => func(data));
+    this.websocket.on('update', (data) => func(data));
   }
 
   public disconnect()
@@ -97,15 +102,10 @@ export class CookerService {
     this.clientId = this.websocket.io.engine.id;
     this.isConnected = true;
 
-    this.websocket.on('status', (status) => this.set_status(status));
-    this.websocket.on('data', (data) => this.set_data(data));
-    this.websocket.on('stopped', () => this.set_status(false));
-    this.websocket.on('start', () => this.set_status(true));
-    this.websocket.on('temperature', (data) => this.set_temperature(data.temperature));
+    this.websocket.on('stopped', () => this.status = false);
+    this.websocket.on('started', () => this.status = true);
+    //this.websocket.on('temperature', (data) => this.set_temperature(data.temperature));
     this.websocket.on('update', (data) => this.update(data));
-    console.log('Registered, now emitting');
-    this.websocket.emit('get_status');
-    this.websocket.emit('get_data');
   }
 
   private onDisconnect()
@@ -115,6 +115,6 @@ export class CookerService {
 
   private onError()
   {
-
+    console.log("error");
   }
 }

@@ -21,20 +21,16 @@ export class MainComponent implements OnInit {
 
   ngOnInit()
   {
-    this.currentlyCooking = this.cs.get_status();
+    this.cs.get_status();//.then(status => this.currentlyCooking = status);
   }
 
   private startCooking(){
-    this.cs.start_cooking(this.temperature);
-    this.currentlyCooking = true;
+    this.cs.start_cooking(this.temperature);//.then(status => {if(status) this.currentlyCooking = true;});
+    //this.currentlyCooking = true;
   }
 
   private stopCooking(){
-    this.cs.stop_cooking();
-    this.currentlyCooking = false;
-  }
-
-  private updateTimer(data){
-    this.elapsedTime = data;
+    this.cs.stop_cooking();//.then(status => {if(status) this.currentlyCooking = false;});
+    //this.currentlyCooking = false;
   }
 }

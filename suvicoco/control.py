@@ -4,6 +4,7 @@ import datetime
 import os
 import threading
 from enum import Enum
+from .util import startThread
 
 class CookerController:
     class States(Enum):
@@ -40,11 +41,11 @@ class CookerController:
     LID_OPEN_MAX_TIME = 30
     LID_OPEN_MIN_CHANGE = 1
 
-    def __init__(self, interface, storage=None):
-        threading.Thread.__init__(self)
+    def __init__(self, interface, storage=None, thread_starter=startThread):
         self.time_factor = 1
         self.interface = interface
         self.storage = storage
+        self.thread_starter = thread_starter
 
         self.lock = threading.Lock()
         self.callbacks = []
@@ -114,8 +115,7 @@ class CookerController:
         if self.thread:
             self.thread.join()
 
-        self.thread = threading.Thread(target=self.run)
-        self.thread.start()
+        self.thread = self.thread_starter(self.run)
 
     def run(self):
         self.running = True
@@ -145,7 +145,7 @@ class CookerController:
 
         self.switch_state(CookerController.States.STOPPED)
 
-        threading.Thread(target=self.notify).start()
+        self.thread_starter(self.notify)
 
     def stop(self):
         self.running = False

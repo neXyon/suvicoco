@@ -15,103 +15,92 @@ class DateTimeEncoder(json.JSONEncoder):
 
         return json.JSONEncoder.default(self, o)
 
-class App:
-    def __init__(self, debug=False):
-        self.storage = FileStorage()
+def stop_callback():
+    global status, storage, socketio
+    storage.stop()
+    status = False
+    socketio.emit('stopped')
 
-        if debug:
-            self.interface = SimulatorInterface(time_factor=1.0)
-        else:
-            self.interface = ElectronicsInterface()
+def storage_callback(what, when, value):
+    global socketio
+    print("Storage", what, when, value)
+    socketio.emit('update', json.dumps({'what': what, 'when': when, 'value': value}, cls=DateTimeEncoder))
 
-        self.controller = CookerController(self.interface, self.storage)
+debug = True
 
-        self.flask = Flask(__name__)
-        self.sio = SocketIO()
+app = Flask(__name__)
+app.debug = debug
+app.config['SECRET_KEY'] = '!suvicoco!'
+socketio = SocketIO(app, async_mode='threading')
 
-        self.flask.debug = debug
-        self.flask.config['SECRET_KEY'] = '!suvicoco!'
+#socketio.init_app(app)
 
-        self.sio.init_app(self.flask)
+storage = FileStorage(thread_starter=socketio.start_background_task)
 
-        self.storage.subscribe(self.storage_callback)
-        self.controller.subscribe(self.stop_callback)
+if debug:
+    interface = SimulatorInterface(time_factor=1.0)
+else:
+    interface = ElectronicsInterface()
 
-        self.status = False
+controller = CookerController(interface, storage, socketio.start_background_task)
 
-    def get_data(self):
-        return self.storage.get()
+storage.subscribe(storage_callback)
+controller.subscribe(stop_callback)
 
-    def get_status(self):
-        return self.status
+status = False
 
-    def start(self):
-        self.sio.run(self.flask, use_reloader=False)
-
-    def stop_callback(self):
-        self.storage.stop()
-        self.status = False
-        self.sio.emit('stopped')
-
-    def storage_callback(self, what, when, value):
-        print("Storage", what, when, value)
-        self.sio.emit('update', json.dumps({'what': what, 'when': when, 'value': value}, cls=DateTimeEncoder))
-
-    def start_cooking(self, target_temperature):
-        self.storage.start()
-        self.controller.set_target(target_temperature)
-        self.controller.start()
-        self.sio.emit('start', json.dumps({'temperature': target_temperature}))
-        self.status = True
-
-    def stop_cooking(self):
-        self.controller.stop()
-
-    def set_temperature(self, target_temperature):
-        self.controller.set_target(target_temperature)
-        self.sio.emit('temperature', json.dumps({'temperature': target_temperature}))
-
-app = App(True)
-
-#@app.sio.on("connect")
+#@socketio.on("connect")
 #def on_connect():
 #    print("Client connected: " + request.sid)
 
-#@app.sio.on("disconnect")
+#@socketio.on("disconnect")
 #def on_disconnect():
 #    print("Client disconnected: " + request.sid)
 
-@app.sio.on('start cooking')
-def start_cooking(json):
-    print(json)
-    if 'temperature' in json:
-        try:
-            temperature = float(json['temperature'])
-        except ValueError:
-            return
-        app.start_cooking(temperature)
-        print("Started cooking")
+@app.route('/control/start/<float:temperature>')
+@app.route('/control/start/<int:temperature>')
+def start_cooking(temperature):
+    global storage, controller, status, socketio
 
-@app.sio.on('stop cooking')
-def stop_cooking(json):
-    app.stop_cooking()
+    if temperature < 40 or temperature > 95:
+        return json.dumps('false')
+
+
+    storage.start()
+    controller.set_target(temperature)
+    controller.start()
+    socketio.emit('started', {'temperature': temperature})
+    status = True
+    print("Started cooking")
+
+    return 'true'
+
+@app.route('/control/stop')
+def stop_cooking():
+    global controller
+
+    controller.stop()
     print("Stopped cooking")
 
-@app.sio.on('set temperature')
-def set_temperature(json):
-    if 'temperature' in json:
-        try:
-            temperature = float(json['temperature'])
-        except ValueError:
-            return
-        app.set_temperature(temperature)
+    return 'true'
 
-@app.sio.on('get data')
-def get_data(data):
-    data = app.get_data()
-    emit('data', json.dumps(data, cls=DateTimeEncoder))
+@app.route('/control/set/<float:temperature>')
+def set_temperature(temperature):
+    global controller, socketio
 
-@app.sio.on('get status')
-def get_status(data):
-    data = app.get_status()
-    emit('status', json.dumps(data))
+    if temperature < 40 or temperature > 95:
+        return 'false'
+
+    controller.set_target(temperature)
+    socketio.emit('temperature', {'temperature': temperature})
+
+    return 'true'
+
+@app.route('/control/data')
+def get_data():
+    data = json.dumps(storage.get(), cls=DateTimeEncoder)
+    return data
+
+@app.route('/control/status')
+def get_status():
+    return json.dumps(status)

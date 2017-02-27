@@ -2,6 +2,7 @@ import pickle
 import os
 from datetime import datetime
 from threading import Thread, Lock, Condition
+from .util import startThread
 
 class MemoryStorage:
     def __init__(self):
@@ -14,8 +15,9 @@ class MemoryStorage:
         self.storage[what].append((when, value))
 
 class FileStorage(MemoryStorage):
-    def __init__(self, directory='/tmp', interval=30):
+    def __init__(self, directory='/tmp', interval=30, thread_starter=startThread):
         super().__init__()
+        self.thread_starter = thread_starter
         self.lock = Lock()
         self.namelock = Lock()
         self.callbacklock = Lock()
@@ -46,7 +48,7 @@ class FileStorage(MemoryStorage):
             super().store(what, when, value)
             self.changed = True
 
-        Thread(target=self.notify, args=(what, when, value)).start()
+        self.thread_starter(self.notify, what, when, value)
 
     def get(self):
         with self.lock:
@@ -94,8 +96,7 @@ class FileStorage(MemoryStorage):
         if self.running:
             return
 
-        self.thread = Thread(target=self.run)
-        self.thread.start()
+        self.thread = self.thread_starter(self.run)
 
     def stop(self):
         self.running = False
