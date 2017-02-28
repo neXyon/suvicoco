@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+
 import { CookerService } from '../services/cooker.service';
 
 @Component({
@@ -7,16 +8,13 @@ import { CookerService } from '../services/cooker.service';
 })
 export class MainComponent implements OnInit {
 
-  private cs : CookerService;
-
   private currentlyCooking : boolean = false;
   private elapsedTime : number = 0;
 
   private temperature : number;
 
-  constructor(private cs_ : CookerService)
+  constructor(private cs : CookerService)
   {
-    this.cs = cs_;
   }
 
   ngOnInit()

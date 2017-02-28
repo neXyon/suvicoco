@@ -1,11 +1,9 @@
   <div class="col-md-6">
     <canvas baseChart width="400" height="200"
-                [datasets]="lineChartData"
-                [labels]="lineChartLabels"
-                [options]="lineChartOptions"
-                [colors]="lineChartColors"
-                [legend]="lineChartLegend"
-                [chartType]="lineChartType"
+                [datasets]="datasets"
+                [options]="options"
+                [legend]="true"
+                [chartType]="'line'"
                 (chartHover)="chartHovered($event)"
                 (chartClick)="chartClicked($event)"></canvas>
   </div>

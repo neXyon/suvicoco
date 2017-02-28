@@ -1,17 +1,40 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+
+//import { CHART_DIRECTIVES } from 'ng2-charts/ng2-charts';
+
+import { CookerService } from '../services/cooker.service';
 
 @Component({
   selector: 'chart',
+  //directives: [CHART_DIRECTIVES],
   templateUrl: './chart.component.html',
 })
-export class ChartComponent {
-  public lineChartData:Array<any> = [
-    {data: [65, 59, 80, 81, 56, 55, 40], label: 'Series A', steppedLine: true, fill: false},
-    {data: [28, 48, 40, 19, 86, 27, 90], label: 'Series B', steppedLine: true, fill: false},
-    {data: [18, 48, 77, 9, 100, 27, 40], label: 'Series C', steppedLine: true, fill: false}
-  ];
-  public lineChartLabels:Array<any> = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-  public lineChartOptions:any = {
+export class ChartComponent implements OnInit {
+  public datasets:Array<any> = [//{data: [{x: 0, y: 0}, {x: 1, y: 1}], label: 'Series A', steppedLine: true, fill: false}];
+      {
+          label: 'Scatter Dataset',
+          data: [{
+              x: -10,
+              y: 0
+          }, {
+              x: 0,
+              y: 10
+          }, {
+              x: 10,
+              y: 5
+          }]
+      }
+  ];//*/
+  private options = {
+    scales: {
+      yAxes: [{
+        ticks: {
+          beginAtZero: true
+        }
+      }]
+    }
+  };
+  public options2:any = {
     responsive: true,
     legend: {
       position: 'bottom'
@@ -38,36 +61,57 @@ export class ChartComponent {
       }]
     }
   };
-  public lineChartColors:Array<any> = [
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
-      borderColor: 'rgba(148,159,177,1)',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
-    },
-    { // dark grey
-      backgroundColor: 'rgba(77,83,96,0.2)',
-      borderColor: 'rgba(77,83,96,1)',
-      pointBackgroundColor: 'rgba(77,83,96,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(77,83,96,1)'
-    },
-    { // grey
-      backgroundColor: 'rgba(148,159,177,0.2)',
-      borderColor: 'rgba(148,159,177,1)',
-      pointBackgroundColor: 'rgba(148,159,177,1)',
-      pointBorderColor: '#fff',
-      pointHoverBackgroundColor: '#fff',
-      pointHoverBorderColor: 'rgba(148,159,177,0.8)'
+
+  constructor(private cs : CookerService)
+  {
+  }
+
+  setData(data) {
+    console.log(data);
+    console.log(Object.keys(data).length);
+
+    let chart_data:Array<any> = new Array(Object.keys(data).length);
+
+    let i = 0;
+    for(let key in data) {
+      let list = data[key];
+
+      let points:Array<any> = new Array(list.length);
+
+      for(let j = 0; j < list.length; j++) {
+        let entry = list[j];
+
+        points[j] = {x: entry[0], y: entry[1]};
+      }
+
+      chart_data[i] = {data: points, label: key, steppedLine: true, fill: false};
+
+      i++;
     }
-  ];
-  public lineChartLegend:boolean = true;
-  public lineChartType:string = 'line';
- 
-  public randomize():void {
+
+    console.log(chart_data);
+    //this.datasets = chart_data;
+
+    this.datasets = [
+        {
+          label: "# of Votes",
+          data: [{x: 1, y: 19}, {x: 2, y: 3}, {x: 3, y: 5}, {x: 4, y: 2}, {x: 5, y: 3}, {x: 6, y: 12}]
+        },
+        {
+          label: "# 2 of Votes",
+          data: [{x: 1, y: 1}, {x: 2, y: 19}, {x: 3, y: 3}, {x: 4, y: 5}, {x: 5, y: 2}, {x: 6, y: 3}]
+        }
+      ];
+
+    return data;
+  }
+
+  ngOnInit() : void {
+    console.log('Init');
+    this.cs.get_data().then(data => this.setData(data));
+  }
+
+  /*public randomize():void {
     let _lineChartData:Array<any> = new Array(this.lineChartData.length);
     for (let i = 0; i < this.lineChartData.length; i++) {
       _lineChartData[i] = {data: new Array(this.lineChartData[i].data.length), label: this.lineChartData[i].label};
@@ -76,13 +120,13 @@ export class ChartComponent {
       }
     }
     this.lineChartData = _lineChartData;
-  }
- 
+  }*/
+
   // events
   public chartClicked(e:any):void {
     console.log(e);
   }
- 
+
   public chartHovered(e:any):void {
     console.log(e);
   }

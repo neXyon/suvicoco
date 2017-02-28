@@ -29,7 +29,7 @@ export class CookerService {
 
   public connect()
   {
-    this.websocket = io("http://localhost:5000");
+    this.websocket = io("/");
     this.websocket.on('connect', () => this.onConnect());
     this.websocket.on('disconnect', () => this.onDisconnect());
     this.websocket.on('error', () => this.onError());
