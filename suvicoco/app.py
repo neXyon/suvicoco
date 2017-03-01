@@ -5,15 +5,7 @@ from .hardware import ElectronicsInterface
 from .storage import FileStorage
 from .control import CookerController
 
-import json
-from datetime import datetime
-
-class DateTimeEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, datetime):
-            return o.isoformat()
-
-        return json.JSONEncoder.default(self, o)
+from flask import json
 
 def stop_callback():
     global status, storage, socketio
@@ -24,16 +16,14 @@ def stop_callback():
 def storage_callback(what, when, value):
     global socketio
     print("Storage", what, when, value)
-    socketio.emit('update', json.dumps({'what': what, 'when': when, 'value': value}, cls=DateTimeEncoder))
+    socketio.emit('update', {'what': what, 'when': when, 'value': value})
 
 debug = True
 
 app = Flask(__name__)
 app.debug = debug
 app.config['SECRET_KEY'] = '!suvicoco!'
-socketio = SocketIO(app, async_mode='threading')
-
-#socketio.init_app(app)
+socketio = SocketIO(app, async_mode='threading', json=json)
 
 storage = FileStorage(thread_starter=socketio.start_background_task)
 
@@ -98,7 +88,7 @@ def set_temperature(temperature):
 
 @app.route('/control/data')
 def get_data():
-    data = json.dumps(storage.get(), cls=DateTimeEncoder)
+    data = json.dumps(storage.get())
     return data
 
 @app.route('/control/status')

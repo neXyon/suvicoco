@@ -78,15 +78,6 @@ export class CookerService {
                .catch((error: any) => console.log('Error', error));
   }
 
-  private update(data)
-  {
-    console.log('update');
-    console.log(data);
-    /*console.log(when);
-    console.log(value);
-    this.data[what] += [when, value];*/
-  }
-
   public onUpdate(func)
   {
     this.websocket.on('update', (data) => func(data));
@@ -105,7 +96,6 @@ export class CookerService {
     this.websocket.on('stopped', () => this.status = false);
     this.websocket.on('started', () => this.status = true);
     //this.websocket.on('temperature', (data) => this.set_temperature(data.temperature));
-    this.websocket.on('update', (data) => this.update(data));
   }
 
   private onDisconnect()

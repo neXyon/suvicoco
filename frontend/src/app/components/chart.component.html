@@ -1,9 +1,17 @@
-  <div class="col-md-6">
-    <canvas baseChart width="400" height="200"
-                [datasets]="datasets"
-                [options]="options"
-                [legend]="true"
-                [chartType]="'line'"
-                (chartHover)="chartHovered($event)"
-                (chartClick)="chartClicked($event)"></canvas>
-  </div>
+<div class="col-md-6" *ngIf="selected">
+  <ul>
+    <li *ngFor="let graph of graphs" (click)="onSelect(graph)">
+      {{graph}}
+    </li>
+  </ul>
+</div>
+<div class="col-md-6" *ngIf="selected">
+  <canvas baseChart width="400" height="200"
+              [datasets]="datasets"
+              [options]="options"
+              [labels]="labels"
+              [legend]="false"
+              [chartType]="'line'"
+              (chartHover)="chartHovered($event)"
+              (chartClick)="chartClicked($event)"></canvas>
+</div>

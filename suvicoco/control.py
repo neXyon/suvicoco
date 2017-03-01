@@ -79,7 +79,7 @@ class CookerController:
 
         self.current_mean = 0
 
-        self.set_target(40)
+        self.set_target(40, False)
 
         self.control_a = 0.1
         self.control_n = 0
@@ -154,7 +154,7 @@ class CookerController:
             self.thread.join()
             self.thread = None
 
-    def set_target(self, value):
+    def set_target(self, value, store=True):
         # TODO: consider changes while cooking?!
         self.target_temperature = value
 
@@ -164,7 +164,7 @@ class CookerController:
         self.control_max = 0.07
         self.control_min = 0.02
 
-        if self.storage:
+        if self.storage and store:
             self.storage.store('target_temperature', self.now, self.target_temperature)
             self.storage.store('control_min', self.now, self.control_min)
             self.storage.store('control_max', self.now, self.control_max)

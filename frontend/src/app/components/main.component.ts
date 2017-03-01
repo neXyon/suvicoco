@@ -9,7 +9,6 @@ import { CookerService } from '../services/cooker.service';
 export class MainComponent implements OnInit {
 
   private currentlyCooking : boolean = false;
-  private elapsedTime : number = 0;
 
   private temperature : number;
 
