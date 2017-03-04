@@ -8,26 +8,27 @@ import { CookerService } from '../services/cooker.service';
 })
 export class MainComponent implements OnInit {
 
-  private currentlyCooking : boolean = false;
-
   private temperature : number;
 
-  constructor(private cs : CookerService)
-  {
+  constructor(private cs : CookerService) {
   }
 
-  ngOnInit()
-  {
-    this.cs.get_status();//.then(status => this.currentlyCooking = status);
+  ngOnInit() {
+    this.cs.get_status();
+    this.cs.onStarted(temperature => this.temperature = temperature);
+    this.cs.onTemperature(temperature => this.temperature = temperature);
+    this.cs.get_temperature().then(temperature => this.temperature = temperature);
   }
 
-  private startCooking(){
-    this.cs.start_cooking(this.temperature);//.then(status => {if(status) this.currentlyCooking = true;});
-    //this.currentlyCooking = true;
+  private startCooking() {
+    this.cs.start_cooking(this.temperature);
   }
 
-  private stopCooking(){
-    this.cs.stop_cooking();//.then(status => {if(status) this.currentlyCooking = false;});
-    //this.currentlyCooking = false;
+  private stopCooking() {
+    this.cs.stop_cooking();
+  }
+
+  private setTemperature() {
+    this.cs.set_temperature(this.temperature);
   }
 }

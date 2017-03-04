@@ -157,6 +157,7 @@ class CookerController:
     def set_target(self, value, store=True):
         # TODO: consider changes while cooking?!
         self.target_temperature = value
+        self.switch_state(CookerController.States.OVERSHOOT)
 
         self.control_last_min = self.target_temperature - CookerController.MAXIMUM_CONTROL_ERROR
         self.control_last_max = self.target_temperature + CookerController.MAXIMUM_CONTROL_ERROR

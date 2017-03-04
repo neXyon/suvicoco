@@ -52,8 +52,8 @@ status = False
 def start_cooking(temperature):
     global storage, controller, status, socketio
 
-    if temperature < 40 or temperature > 95:
-        return json.dumps('false')
+    if temperature < 30 or temperature > 95:
+        return 'false'
 
 
     storage.start()
@@ -70,15 +70,17 @@ def stop_cooking():
     global controller
 
     controller.stop()
+    storage.stop()
     print("Stopped cooking")
 
     return 'true'
 
 @app.route('/control/set/<float:temperature>')
+@app.route('/control/set/<int:temperature>')
 def set_temperature(temperature):
     global controller, socketio
 
-    if temperature < 40 or temperature > 95:
+    if temperature < 30 or temperature > 95:
         return 'false'
 
     controller.set_target(temperature)
@@ -86,11 +88,20 @@ def set_temperature(temperature):
 
     return 'true'
 
+@app.route('/control/get')
+def get_temperature():
+    global controller
+
+    return json.dumps(controller.target_temperature)
+
 @app.route('/control/data')
 def get_data():
-    data = json.dumps(storage.get())
-    return data
+    global storage
+
+    return json.dumps(storage.get())
 
 @app.route('/control/status')
 def get_status():
+    global status
+
     return json.dumps(status)

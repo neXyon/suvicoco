@@ -12,11 +12,6 @@ import 'rxjs/add/operator/switchMap';
 
 declare var $:any;
 
-/*
-TODO:
-- show label value because of hover...
-*/
-
 @Component({
   selector: 'chart',
   templateUrl: './chart.component.html',
@@ -46,19 +41,24 @@ export class ChartComponent implements OnInit {
 		}
   };
 
-  public labels = [];
-  public datasets = {};
-  private currentValues = {}
+  public labels: any;
+  public datasets: any;
+  private currentValues: any;
   private currentTime = new Subject<Date>();
 
   private plot: any = null;
-  private updateLegendTimeout = null;
-  private latestPosition = null;
 
   @ViewChild('placeholder') placeholder :ElementRef;
 
   constructor(private cs : CookerService)
   {
+    this.reset();
+  }
+
+  reset() {
+    this.labels = [];
+    this.datasets = {};
+    this.currentValues = {};
   }
 
   refresh() {
@@ -126,6 +126,7 @@ export class ChartComponent implements OnInit {
     }
 
     this.cs.onUpdate(data => this.update(data));
+    this.cs.onStarted(() => this.reset());
 
     return data;
   }

@@ -20,6 +20,7 @@ export class CookerService {
   private stopUrl = this.baseUrl + 'stop';
   private statusUrl = this.baseUrl + 'status';
   private setUrl = this.baseUrl + 'set/';
+  private getUrl = this.baseUrl + 'get';
   private dataUrl = this.baseUrl + 'data';
 
   constructor(private http: Http)
@@ -33,6 +34,8 @@ export class CookerService {
     this.websocket.on('connect', () => this.onConnect());
     this.websocket.on('disconnect', () => this.onDisconnect());
     this.websocket.on('error', () => this.onError());
+    this.onStarted(temperature => this.temperature = temperature);
+    this.onTemperature(temperature => this.temperature = temperature);
   }
 
   public start_cooking(temperature) : Promise<boolean>
@@ -70,12 +73,36 @@ export class CookerService {
                .catch((error: any) => console.log('Error', error));
   }
 
-  private set_temperature(temperature : number) : Promise<boolean>
+  public get_temperature() : Promise<number>
+  {
+    return this.http.get(this.getUrl)
+               .toPromise()
+               .then(response => response.json() as number)
+               .then(temperature => this.temperature = temperature)
+               .catch((error: any) => console.log('Error', error));
+  }
+
+  public set_temperature(temperature : number) : Promise<boolean>
   {
     return this.http.get(`${this.setUrl}/${temperature}`)
                .toPromise()
                .then(response => response.json() as boolean)
                .catch((error: any) => console.log('Error', error));
+  }
+
+  public onStarted(func)
+  {
+    this.websocket.on('started', (data) => func(data.temperature));
+  }
+
+  public onStopped(func)
+  {
+    this.websocket.on('started', () => func());
+  }
+
+  public onTemperature(func)
+  {
+    this.websocket.on('temperature', (data) => func(data.temperature));
   }
 
   public onUpdate(func)
