@@ -9,13 +9,9 @@ import { CookerService } from '../services/cooker.service';
 export class NavbarComponent implements OnInit {
 
   loadingActive: boolean = false;
-  router : Router;
-  wss : CookerService;
 
-  constructor(private router_: Router, private wss_ : CookerService)
+  constructor(private router: Router, private cs : CookerService)
   {
-    this.router = router_;
-    this.wss = wss_;
   }
 
   ngOnInit() {
