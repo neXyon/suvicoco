@@ -1,94 +1,128 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 
 import { CookerService } from '../services/cooker.service';
+
+import { Observable }        from 'rxjs/Observable';
+import { Subject }           from 'rxjs/Subject';
+
+import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/sampleTime';
+import 'rxjs/add/operator/distinctUntilChanged';
+import 'rxjs/add/operator/switchMap';
+
+declare var $:any;
+
+/*
+TODO:
+- show label value because of hover...
+*/
 
 @Component({
   selector: 'chart',
   templateUrl: './chart.component.html',
+  styleUrls: ['./chart.component.css']
 })
 export class ChartComponent implements OnInit {
-  public datasets:Array<any> = [ { label: 'No Data', data: [0, 0], steppedLine: true, fill: false } ];
-  public labels: Array<any> = [0, 1];
-  public options:any = {
-    responsive: true,
-    tooltips: {
-      mode: 'x',
-      intersect: false,
-
+  public options: any = {
+    legend: {
+      show: false,
     },
-    elements: {
-      point:{
-        radius: 0
+    xaxis: {
+      mode: 'time',
+      timeformat: '%H:%M:%S'
+    },
+		grid: {
+			hoverable: true,
+			autoHighlight: false
+		},
+    series: {
+      lines: {
+        steps: true
       }
     },
-    annotation: {
-      annotations: [{
-        id: 'a-line-1',
-        type: 'line',
-        mode: 'horizontal',
-        scaleID: 'y-axis-1',
-        value: 50,
-        borderColor: 'red',
-        borderWidth: 2,
-      }]
-    }
+    colors: ["#ef5350", "#ab47bc", "#5c6bc0", "#29b6f6", "#26a69a", "#9ccc65", "#ffee58", "#ffa726", "#8d6e63", "#78909c"],
+		crosshair: {
+			mode: "x"
+		}
   };
-  public graphs: Array<any> = [];
-  public graphData: Array<any> = [];
-  public selected: string = null;
+
+  public labels = [];
+  public datasets = {};
+  private currentValues = {}
+  private currentTime = new Subject<Date>();
+
+  private plot: any = null;
+  private updateLegendTimeout = null;
+  private latestPosition = null;
+
+  @ViewChild('placeholder') placeholder :ElementRef;
 
   constructor(private cs : CookerService)
   {
   }
 
-  onSelect(graph) {
-    let data = this.graphData[graph];
-    this.datasets[0].data = data.data;
-    this.labels = data.labels;
-    this.selected = graph;
+  refresh() {
+    let data = []
+
+    for(let key in this.datasets) {
+      let ds = this.datasets[key];
+
+      if(ds.lines.show) {
+        data.push(ds);
+      }
+    }
+
+    if(data.length == 0)
+      return;
+
+    if(this.plot) {
+      this.plot.setData(data);
+      this.plot.setupGrid();
+      this.plot.draw();
+    }
+    else {
+      this.plot = $.plot(this.placeholder.nativeElement, data, this.options );
+
+      this.currentTime.sampleTime(50).distinctUntilChanged()
+        .switchMap(time => Observable.of<any>(this.closestValues(time)))
+        .subscribe(values => this.currentValues = values);
+
+      $(this.placeholder.nativeElement).bind("plothover", (event, pos, item) => this.hover(event, pos, item));
+    }
+  }
+
+  addDataset(label, data) {
+    let color = this.labels.length;
+    this.labels.push(label);
+    this.datasets[label] = {label: label, data: data, color: color, lines: {show: label == 'temperature'}};
+    this.labels.sort();
   }
 
   setData(data) {
-    let labels = new Array(Object.keys(data).length);
+    let maxDate = null;
 
-    let i = 0;
     for(let key in data) {
       let list = data[key];
 
-      let x:Array<any> = new Array(list.length);
-      let y:Array<any> = new Array(list.length);
+      let last_value = 0;
 
       for(let j = 0; j < list.length; j++) {
-        let entry = list[j];
+        list[j][0] = new Date(list[j][0]);
 
-        x[j] = entry[1];
-        y[j] = entry[0];
+        if(!maxDate || list[j][0] > maxDate)
+          maxDate = list[j][0];
+
+        last_value = list[j][1];
       }
 
-      data[key] = {data: x, labels: y};
-      labels[i++] = key;
+      this.addDataset(key, data[key]);
+
+      //this.currentValues[key] = last_value;
     }
 
-    labels.sort();
-
-    this.graphs = labels;
-    this.graphData = data;
-
-    if(Object.keys(data).length > 0) {
-      if(labels.indexOf(this.selected) == -1) {
-        if(labels.indexOf("temperature") != -1) {
-          this.onSelect("temperature");
-        }
-        else {
-          this.onSelect(labels[0]);
-        }
-      }
-      else {
-        this.onSelect(this.selected);
-      }
-    }
-    else {
-      this.selected = null;
+    if(this.labels.length > 0) {
+      this.refresh();
+      this.currentTime.next(maxDate);
     }
 
     this.cs.onUpdate(data => this.update(data));
@@ -97,19 +131,43 @@ export class ChartComponent implements OnInit {
   }
 
   update(data : any) {
-    if(this.graphs.indexOf(data.what) == -1) {
-      this.graphData[data.what] = {data: [], labels: []};
-      this.graphs.push(data.what);
-      this.graphs.sort();
+    if(this.labels.indexOf(data.what) == -1) {
+      this.addDataset(data.what, []);
     }
 
-    let entry = this.graphData[data.what];
-    entry.data.push(data.value);
-    entry.labels.push(data.when);
+    let entry = this.datasets[data.what];
+    let date = new Date(data.when);
+    entry.data.push([date, data.value]);
 
-    if(this.selected == data.what) {
-      this.labels = entry.labels.slice();
+    if(this.datasets[data.what].lines.show) {
+      this.refresh();
+      this.currentTime.next(date);
     }
+  }
+
+  hover(event, pos, item) {
+    this.currentTime.next(new Date(pos.x));
+  }
+
+  closestValues(time) {
+    let values = {};
+
+    for(let label in this.labels) {
+      label = this.labels[label];
+      let data = this.datasets[label].data;
+
+      let i = 0;
+
+      for(i = 0; i < data.length; i++) {
+        if(data[i][0] > time) {
+          break;
+        }
+      }
+
+      values[label] = i == 0 ? null : (+data[i - 1][1]).toFixed(2);
+    }
+
+    return values;
   }
 
   ngOnInit() : void {

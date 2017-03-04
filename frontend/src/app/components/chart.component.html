@@ -1,17 +1,15 @@
-<div class="col-md-6" *ngIf="selected">
+<div class="col s9">
+  <div #placeholder style="width:100%;height:300px"></div>
+</div>
+<div class="col s3">
   <ul>
-    <li *ngFor="let graph of graphs" (click)="onSelect(graph)">
-      {{graph}}
+    <li *ngFor="let label of labels">
+      <div class="switch">
+        <label>
+          <input type="checkbox" [(ngModel)]="datasets[label].lines.show" (change)="refresh()">
+          <span class="lever leverc{{datasets[label].color}}"></span>
+        </label> {{label}} = {{currentValues[label] ? currentValues[label] : '?'}}
+      </div>
     </li>
   </ul>
-</div>
-<div class="col-md-6" *ngIf="selected">
-  <canvas baseChart width="400" height="200"
-              [datasets]="datasets"
-              [options]="options"
-              [labels]="labels"
-              [legend]="false"
-              [chartType]="'line'"
-              (chartHover)="chartHovered($event)"
-              (chartClick)="chartClicked($event)"></canvas>
 </div>

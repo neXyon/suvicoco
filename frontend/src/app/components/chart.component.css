@@ -1,0 +1,79 @@
+.switch label input[type="checkbox"]:checked + .leverc0::after {
+    background-color: #ef5350;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc0 {
+    background-color: #ef9a9a;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc1::after {
+    background-color: #ab47bc;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc1 {
+    background-color: #ce93d8;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc2::after {
+    background-color: #5c6bc0;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc2 {
+    background-color: #9fa8da;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc3::after {
+    background-color: #29b6f6;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc3 {
+    background-color: #81d4fa;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc4::after {
+    background-color: #26a69a;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc4 {
+    background-color: #80cbc4;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc5::after {
+    background-color: #9ccc65;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc5 {
+    background-color: #c5e1a5;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc6::after {
+    background-color: #ffee58;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc6 {
+    background-color: #fff59d;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc7::after {
+    background-color: #ffa726;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc7 {
+    background-color: #ffcc80;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc8::after {
+    background-color: #8d6e63;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc8 {
+    background-color: #bcaaa4;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc9::after {
+    background-color: #78909c;
+}
+
+.switch label input[type="checkbox"]:checked + .leverc9 {
+    background-color: #b0bec5;
+}

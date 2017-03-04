@@ -25,6 +25,7 @@
     "chart.js": "^2.5.0",
     "chartjs-plugin-annotation": "^0.5.2",
     "core-js": "^2.4.1",
+    "flot": "^0.8.0-alpha",
     "jquery": "^2.2.4",
     "materialize-css": "^0.97.8",
     "ng2-charts": "^1.5.0",

@@ -22,6 +22,9 @@
       ],
       "scripts": [
         "../node_modules/jquery/dist/jquery.js",
+        "../node_modules/flot/jquery.flot.js",
+        "../node_modules/flot/jquery.flot.time.js",
+        "../node_modules/flot/jquery.flot.crosshair.js",
         "../node_modules/materialize-css/dist/js/materialize.js",
       	"../node_modules/chart.js/dist/Chart.bundle.js",
       	"../node_modules/chartjs-plugin-annotation/chartjs-plugin-annotation.js"
